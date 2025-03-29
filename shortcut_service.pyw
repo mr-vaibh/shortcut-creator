@@ -1,17 +1,18 @@
 import os
 import time
-import pylnk3
-import sys
+import winshell
+import pythoncom
 
 GIT_FOLDER = r"D:\~GIT"
 SHORTCUT_FOLDER = r"D:\Shortcuts"
-CHECK_INTERVAL = 3600  # 1 hour
+CHECK_INTERVAL = 3600  # 1 hour (3600 seconds)
 
 
 def create_shortcut(target_folder, shortcut_path):
-    """Creates a Windows shortcut for a folder."""
-    lnk = pylnk3.create(shortcut_path, target=target_folder)
-    lnk.write()
+    """Creates a Windows shortcut for a folder using winshell."""
+    with winshell.shortcut(shortcut_path) as link:
+        link.path = target_folder
+        link.description = f"Shortcut to {os.path.basename(target_folder)}"
 
 
 def update_shortcuts():
@@ -37,11 +38,11 @@ def update_shortcuts():
 
 
 def main():
+    pythoncom.CoInitialize()  # Required for COM operations
     while True:
         update_shortcuts()
         time.sleep(CHECK_INTERVAL)
 
 
 if __name__ == "__main__":
-    # Run the script with pythonw.exe to hide the console
     main()
